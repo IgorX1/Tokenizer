@@ -1,0 +1,5 @@
+class App{
+	private void func(int a, double b){
+		double c =0X12;
+	}
+}
