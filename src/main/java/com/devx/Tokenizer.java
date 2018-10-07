@@ -1,7 +1,5 @@
 package com.devx;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -18,7 +16,7 @@ public class Tokenizer {
 
     public Tokenizer(String path) throws Exception{
         try{
-            text = readFile("code.txt", Charset.defaultCharset());
+            text = readFile(path, Charset.defaultCharset());
         }catch (IOException exc){
             throw new Exception("The file can't be correctly read from path:"+path);
         }
@@ -82,22 +80,26 @@ public class Tokenizer {
     }
 
     public void getTokens(){
-        for(int index=0; index<text.length(); ++index){
-            if(isWhiteSpaceCharacter(index))
-                continue;
-            else if(isStartOfChar(index))
-                index = getCharacter(index);
-            else if(isStartOfString(index))
-                index = getString(index);
-            else if(isStartOfDigit(index))
-                index = getDigit(index);
-            else  if(isStartOfOperator(index))
-                index = getOperator(index);
-            else if(isStartOfComment(index))
-                index = getComment(index);
-            else if(isStartOfIdentifierOrKeyword(index))
-                index = getIdentifierOrKeyWord(index);
-        }
+        try{
+            for(int index=0; index<text.length(); ++index){
+                if(isWhiteSpaceCharacter(index))
+                    continue;
+                else if(isStartOfChar(index))
+                    index = getCharacter(index);
+                else if(isStartOfString(index))
+                    index = getString(index);
+                else if(isStartOfDigit(index))
+                    index = getDigit(index);
+                else  if(isStartOfOperator(index))
+                    index = getOperator(index);
+                //else if(isStartOfComment(index))
+                    //index = getComment(index);
+                else if(isStartOfIdentifierOrKeyword(index))
+                    index = getIdentifierOrKeyWord(index);
+            }
+        }catch (StringIndexOutOfBoundsException exc){}
+
+        printLexems();
     }
 
     private boolean isWhiteSpaceCharacter(int index){
@@ -181,9 +183,9 @@ public class Tokenizer {
     }
 
     //TODO: implement it
-    private int getComment(int index){
+    private int getComment(int index) throws Exception{
         StringBuilder t = new StringBuilder("");
-        throw new NotImplementedException();
+        throw new Exception();
     }
 
     private int getOperator(int index){
@@ -218,9 +220,29 @@ public class Tokenizer {
     }
 
     private int getIdentifierOrKeyWord(int index){
-        StringBuilder t = new StringBuilder(text.charAt(index));
+        StringBuilder t = new StringBuilder();
+        t.append(text.charAt(index));
         for(index++; index<text.length(); ++index){
+            if(isStartOfIdentifierOrKeyword(index))
+                t.append(text.charAt(index));
+            else{
+                --index;
+                break;
+            }
+        }
 
+        String res = t.toString();
+
+        if(keywords.contains(res))
+             tokenList.add(new Token(res, type.KEYWORD));
+        else tokenList.add(new Token(res, type.IDENTIFIER));
+
+        return index;
+    }
+
+    private void printLexems(){
+        for(Token s:tokenList){
+            System.out.println("("+s.getToken()+"  ::  "+s.getType()+")");
         }
     }
 }
