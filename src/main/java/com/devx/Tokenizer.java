@@ -97,7 +97,9 @@ public class Tokenizer {
                 else if(isStartOfIdentifierOrKeyword(index))
                     index = getIdentifierOrKeyWord(index);
             }
-        }catch (StringIndexOutOfBoundsException exc){}
+        }catch (StringIndexOutOfBoundsException exc){
+            System.out.println("Index out of bounds!!");//TODO:get rid fater testing
+        }
 
         printLexems();
     }
@@ -194,6 +196,12 @@ public class Tokenizer {
         if(index<text.length()){
             if("+=!-&^*();,/.%[]~=<>".contains(Character.toString(text.charAt(index)))){
                 t.append(text.charAt(index++));
+            }
+            else{
+                String res = t.toString();
+                tokenList.add(new Token(res, type.OPERATOR));
+                index--;
+                return index;
             }
             String res = t.toString();
             if(!(res.equals("++")||
