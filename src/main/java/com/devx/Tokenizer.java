@@ -166,14 +166,15 @@ public class Tokenizer {
 
     private int getDigit(int index){
         StringBuilder t = new StringBuilder("");
-        for(index++; index<text.length() && !isWhiteSpaceCharacter(text.charAt(index)); ++index){
-            /*if(isStartOfDigit(text.charAt(index)) || text.charAt(index)=='.' || text.charAt(index)=='x' || text.charAt(index)=='X'){
+        t.append(text.charAt(index++));
+        for(; index<text.length(); ++index){
+            if(isStartOfDigit(index) || text.charAt(index)=='.' || text.charAt(index)=='x' || text.charAt(index)=='X'){
                 t.append(text.charAt(index));
             }else{
                 index--;
+                t.append(text.charAt(index));
                 break;
-            }*/
-            t.append(text.charAt(index));
+            }
         }
 
         String res = t.toString();

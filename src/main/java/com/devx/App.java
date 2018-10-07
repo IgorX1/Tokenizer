@@ -6,7 +6,7 @@ public class App
     {
         try {
             System.out.println("TOKENIZER by Igor Konobas (TTP-31, 2018)");
-            Tokenizer tokenizer = new Tokenizer("example.txt");
+            Tokenizer tokenizer = new Tokenizer("code.txt");
             tokenizer.getTokens();
         } catch (Exception e) {
             e.printStackTrace();
