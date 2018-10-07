@@ -25,6 +25,6 @@ public class SpliterWithDelims {
      * @return An array of Strings
      */
     static String[] splitAndKeep(String input, String regex) {
-        return splitAndKeep(input, regex, 0);
+        return splitAndKeep(input, regex, 1);
     }
 }
