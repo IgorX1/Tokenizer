@@ -219,7 +219,10 @@ public class Tokenizer {
                 res.equals("<<")||
                 res.equals(">>")))
             {
-                tokenList.add(new Token(res, type.UNKNOWN));
+                //tokenList.add(new Token(res, type.UNKNOWN));
+                for (char c : res.toCharArray()){
+                    tokenList.add(new Token(Character.toString(c), type.OPERATOR));
+                }
                 return index;
             }
         }
