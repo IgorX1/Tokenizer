@@ -77,6 +77,7 @@ public class Tokenizer {
         keywords.add("synchronized");
         keywords.add("volatile");
         keywords.add("this");
+        keywords.add("Override");
     }
 
     public void getTokens(){
@@ -182,7 +183,7 @@ public class Tokenizer {
         StringBuilder t = new StringBuilder("");
         t.append(text.charAt(index++));
         for(; index<text.length(); ++index){
-            if(isStartOfDigit(index) || text.charAt(index)=='.' || text.charAt(index)=='x' || text.charAt(index)=='X'){
+            if(isStartOfDigit(index)|| Character.isLetter(text.charAt(index)) || text.charAt(index)=='.' || text.charAt(index)=='x' || text.charAt(index)=='X'){
                 t.append(text.charAt(index));
             }else{
                 index--;
@@ -192,7 +193,7 @@ public class Tokenizer {
         }
 
         String res = t.toString();
-        if(res.matches("[0-9]+") || res.matches("[0-9]+.[0-9]+")|| res.matches("0(x|X)[0-9]+")){
+        if(res.matches("[0-9]+") || res.matches("[0-9]+.[0-9]+")|| res.matches("0(x|X)[0-9a-fA-F]+")){
             tokenList.add(new Token(res, type.NUMBER));
         }else tokenList.add(new Token(res, type.UNKNOWN));
 
@@ -306,7 +307,7 @@ public class Tokenizer {
 
     private void printLexems(){
         for(Token s:tokenList){
-            System.out.println("("+s.getToken()+"  ::  "+s.getType()+")");
+            System.out.println(s.getToken()+"  ::  "+s.getType());
         }
     }
 }
