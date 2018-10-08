@@ -1,6 +1,7 @@
+﻿2;/*Block commwnt*/
 package com.javacourse;
-
-import java.util.ArrayList;
+//рядковий коментар
+import java.util.ArrayList;/*блочний коментар*/
 import java.util.Scanner;
 
 public class OddAndEvenNumbers {

@@ -84,16 +84,20 @@ public class Tokenizer {
             for(int index=0; index<text.length(); ++index){
                 if(isWhiteSpaceCharacter(index))
                     continue;
+                else if(isBlock(index))
+                    index = getBlock(index);
+                else if(isSemicolon(index))
+                    index = getSemicolon(index);
                 else if(isStartOfChar(index))
                     index = getCharacter(index);
                 else if(isStartOfString(index))
                     index = getString(index);
                 else if(isStartOfDigit(index))
                     index = getDigit(index);
+                else if(isStartOfComment(index))
+                    index = getComment(index);
                 else  if(isStartOfOperator(index))
                     index = getOperator(index);
-                //else if(isStartOfComment(index))
-                    //index = getComment(index);
                 else if(isStartOfIdentifierOrKeyword(index))
                     index = getIdentifierOrKeyWord(index);
             }
@@ -121,7 +125,9 @@ public class Tokenizer {
     }
 
     private boolean isStartOfComment(int index){
-        return text.charAt(index)=='/';
+        if(index+1<text.length())
+            return text.charAt(index)=='/' && (text.charAt(index+1)=='/' || text.charAt(index+1)=='*');
+        else return false;
     }
 
     private boolean isStartOfOperator(int index){
@@ -131,6 +137,14 @@ public class Tokenizer {
     private boolean isStartOfIdentifierOrKeyword(int index){
         char current = text.charAt(index);
         return (Character.isLetter(current)||current=='_'||current=='$');
+    }
+
+    private boolean isBlock(int index){
+        return text.charAt(index)=='{' || text.charAt(index)=='}';
+    }
+
+    private boolean isSemicolon(int index){
+        return text.charAt(index)==';';
     }
 
     private int getCharacter(int index){
@@ -172,7 +186,7 @@ public class Tokenizer {
                 t.append(text.charAt(index));
             }else{
                 index--;
-                t.append(text.charAt(index));
+                //t.append(text.charAt(index));
                 break;
             }
         }
@@ -185,17 +199,42 @@ public class Tokenizer {
         return index;
     }
 
-    //TODO: implement it
-    private int getComment(int index) throws Exception{
+    private int getComment(int index){
         StringBuilder t = new StringBuilder("");
-        throw new Exception();
+        //t.append(text.charAt(index++));
+        index++;
+        if(text.charAt(index)=='/'){
+            index++;
+            for(; index<text.length(); ++index){
+                //if(text.charAt(index)=='\r'|| text.charAt(index)==' ') continue;
+                if(text.charAt(index)=='\n'){
+                    //Trim right spaces
+                    String rtrim = t.toString().replaceAll("\\s+$","");
+                    tokenList.add(new Token(rtrim, type.COMMENT));
+                    return index;
+                }
+                t.append(text.charAt(index));
+            }
+        }else{// we find *
+            index++;
+            for(; index<text.length(); ++index){
+                if(text.charAt(index)=='*' && text.charAt(index+1)=='/'){
+                    tokenList.add(new Token(t.toString(), type.COMMENT));
+                    return ++index;
+                }
+                t.append(text.charAt(index));
+            }
+        }
+
+        tokenList.add(new Token(t.toString(), type.UNKNOWN));
+        return index;
     }
 
     private int getOperator(int index){
         StringBuilder t = new StringBuilder("");
         t.append(text.charAt(index++));
         if(index<text.length()){
-            if("+=!-&^*();,/.%[]~=<>".contains(Character.toString(text.charAt(index)))){
+            if("+=!-&^*(),/.%[]~=<>".contains(Character.toString(text.charAt(index))) && text.charAt(index+1)!='/'){
                 t.append(text.charAt(index++));
             }
             else{
@@ -249,6 +288,19 @@ public class Tokenizer {
              tokenList.add(new Token(res, type.KEYWORD));
         else tokenList.add(new Token(res, type.IDENTIFIER));
 
+        return index;
+    }
+
+    private int getBlock(int index){
+        if(text.charAt(index)=='{')
+            tokenList.add(new Token(Character.toString(text.charAt(index++)), type.BLOCK_BEGIN));
+        else
+            tokenList.add(new Token(Character.toString(text.charAt(index++)), type.BLOCK_END));
+        return index;
+    }
+
+    private  int getSemicolon(int index){
+        tokenList.add(new Token(Character.toString(text.charAt(index)), type.SEMICOLON));
         return index;
     }
 

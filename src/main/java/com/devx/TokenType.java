@@ -8,5 +8,8 @@ public enum TokenType {
     KEYWORD,
     OPERATOR,
     IDENTIFIER,
+    BLOCK_BEGIN,
+    BLOCK_END,
+    SEMICOLON,
     UNKNOWN
 }
