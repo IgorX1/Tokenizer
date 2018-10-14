@@ -103,7 +103,7 @@ public class Tokenizer {
                     index = getIdentifierOrKeyWord(index);
             }
         }catch (StringIndexOutOfBoundsException exc){
-            System.out.println("Index out of bounds!!");//TODO:get rid fater testing
+
         }
 
         printLexems();
