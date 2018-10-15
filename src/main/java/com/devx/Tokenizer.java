@@ -103,7 +103,7 @@ public class Tokenizer {
                     index = getIdentifierOrKeyWord(index);
             }
         }catch (StringIndexOutOfBoundsException exc){
-
+            System.out.println("ERR");
         }
 
         printLexems();
@@ -122,7 +122,8 @@ public class Tokenizer {
     }
 
     private boolean isStartOfDigit(int index){
-        return Character.isDigit(text.charAt(index));
+        return Character.isDigit(text.charAt(index))
+                ||(text.charAt(index)=='.' && Character.isDigit(text.charAt(index+1)));
     }
 
     private boolean isStartOfComment(int index){
@@ -187,13 +188,12 @@ public class Tokenizer {
                 t.append(text.charAt(index));
             }else{
                 index--;
-                //t.append(text.charAt(index));
                 break;
             }
         }
 
         String res = t.toString();
-        if(res.matches("[0-9]+") || res.matches("[0-9]+.[0-9]+")|| res.matches("0(x|X)[0-9a-fA-F]+")){
+        if(res.matches("[0-9]+") || res.matches("[0-9]+.[0-9]+")|| res.matches("0(x|X)[0-9a-fA-F]+")|| res.matches(".[0-9]+")){
             tokenList.add(new Token(res, type.NUMBER));
         }else tokenList.add(new Token(res, type.UNKNOWN));
 
@@ -202,12 +202,10 @@ public class Tokenizer {
 
     private int getComment(int index){
         StringBuilder t = new StringBuilder("");
-        //t.append(text.charAt(index++));
         index++;
         if(text.charAt(index)=='/'){
             index++;
             for(; index<text.length(); ++index){
-                //if(text.charAt(index)=='\r'|| text.charAt(index)==' ') continue;
                 if(text.charAt(index)=='\n'){
                     //Trim right spaces
                     String rtrim = t.toString().replaceAll("\\s+$","");
@@ -235,8 +233,9 @@ public class Tokenizer {
         StringBuilder t = new StringBuilder("");
         t.append(text.charAt(index++));
         if(index<text.length()){
-            if("+=!-&^*(),/.%[]~=<>".contains(Character.toString(text.charAt(index))) && text.charAt(index+1)!='/'){
-                t.append(text.charAt(index++));
+            //case when operator consists of two characs
+            if("+=!-&^*(),/.%[]~=<>".contains(Character.toString(text.charAt(index))) && (index+2<text.length()?text.charAt(index+1)!='/':true)){
+                t.append(text.charAt(index));//++
             }
             else{
                 String res = t.toString();
@@ -244,6 +243,12 @@ public class Tokenizer {
                 index--;
                 return index;
             }
+
+            //case when operator consist of 3 characs
+            if(index+1<text.length() && "<>=".contains(Character.toString(text.charAt(index+1)))&& (index+3<text.length()?text.charAt(index+2)!='/':true)){
+                t.append(text.charAt(index++));
+            }
+
             String res = t.toString();
             if(!(res.equals("++")||
                 res.equals("--")||
@@ -257,7 +262,10 @@ public class Tokenizer {
                 res.equals("&&")||
                 res.equals("||")||
                 res.equals("<<")||
-                res.equals(">>")))
+                res.equals(">>")||
+                res.equals("<<<")||
+                res.equals("<<=")||
+                res.equals(">>=")))
             {
                 //tokenList.add(new Token(res, type.UNKNOWN));
                 for (char c : res.toCharArray()){

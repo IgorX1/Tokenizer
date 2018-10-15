@@ -1,6 +1,8 @@
 package com.devx;
 0x14FA
-5+0.7=0786
+5+0.7=0786;.99
+0.99+12==44++++2;
+55<<<12+1;
 public class NumberDivision implements OperationStrategy {
     @Override
     public Number execute(Number a, Number b) {
